@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClipRadar - 다운로드/연동</title>
+    <link rel="stylesheet" href="./assets/site.css" />
+  </head>
+  <body>
+    <main class="site-shell">
+      <nav class="site-nav">
+        <a class="brand" href="./index.html">
+          <span class="brand-mark">CR</span>
+          <span><strong>ClipRadar</strong><span>Download and integration</span></span>
+        </a>
+        <div class="nav-links">
+          <a href="./index.html">소개</a>
+          <a href="./sample-report.html">실제 리포트</a>
+          <a href="./usage.html">사용법</a>
+          <a class="active" href="./integration.html">다운로드/연동</a>
+        </div>
+      </nav>
+
+      <section class="section panel">
+        <p class="eyebrow">Integration</p>
+        <h1>ClipCatcher와 함께 쓰는 구조</h1>
+        <p class="lead">
+          ClipRadar는 하이라이트 후보를 찾고, ClipCatcher는 실제 VOD 구간 다운로드를 담당합니다.
+          둘을 분리하면 분석과 다운로드를 각각 안정적으로 개선할 수 있습니다.
+        </p>
+      </section>
+
+      <section class="section panel">
+        <div class="grid two">
+          <article class="step-card">
+            <h3>ClipRadar가 만드는 것</h3>
+            <p>VOD URL, 추천 컷 시작/종료 시간, 하이라이트 타입, 근거 키워드, 대표 채팅 샘플이 들어 있는 JSON 파일입니다.</p>
+          </article>
+          <article class="step-card">
+            <h3>ClipCatcher가 쓰는 것</h3>
+            <p><code>cutStartTimeSeconds</code>와 <code>cutEndTimeSeconds</code>를 읽어 해당 구간만 다운로드합니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section panel">
+        <p class="eyebrow">Setup</p>
+        <h2>GitHub Pages 구성</h2>
+        <p>
+          이 사이트는 정적 파일만 사용하므로 GitHub Pages에서 무료로 호스팅할 수 있습니다.
+          저장소 설정에서 Pages 소스를 `main` 브랜치의 `/docs` 폴더로 지정하면 됩니다.
+          실시간 VOD 분석은 로컬 앱 또는 별도 서버가 필요합니다.
+        </p>
+        <pre class="code-box">Repository Settings
+-> Pages
+-> Build and deployment: Deploy from a branch
+-> Branch: main
+-> Folder: /docs</pre>
+      </section>
+
+      <section class="section panel">
+        <p class="eyebrow">Download Copy</p>
+        <h2>릴리즈 페이지 안내 문구 예시</h2>
+        <p>
+          ClipRadar는 로컬에서 VOD 채팅을 분석해 하이라이트 후보를 찾습니다.
+          분석 결과는 ClipCatcher용 JSON, CSV 작업표, HTML 리포트로 저장할 수 있습니다.
+        </p>
+      </section>
+
+      <p class="footer">실제 앱 다운로드 링크는 GitHub Release가 준비되면 이 페이지에 연결하면 됩니다.</p>
+    </main>
+  </body>
+</html>

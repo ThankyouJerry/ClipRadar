@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClipRadar - 방송 하이라이트 분석</title>
+    <link rel="stylesheet" href="./assets/site.css" />
+  </head>
+  <body>
+    <main class="site-shell">
+      <nav class="site-nav">
+        <a class="brand" href="./index.html">
+          <span class="brand-mark">CR</span>
+          <span><strong>ClipRadar</strong><span>Highlight analytics for editors</span></span>
+        </a>
+        <div class="nav-links">
+          <a class="active" href="./index.html">소개</a>
+          <a href="./sample-report.html">실제 리포트</a>
+          <a href="./usage.html">사용법</a>
+          <a href="./integration.html">다운로드/연동</a>
+        </div>
+      </nav>
+
+      <section class="hero">
+        <div class="hero-main panel">
+          <p class="eyebrow">ClipRadar</p>
+          <h1>긴 VOD에서<br />편집할 순간만 빠르게 찾습니다.</h1>
+          <p class="lead">
+            ClipRadar는 치지직 VOD의 채팅 반응을 분석해 하이라이트 후보를 만들고,
+            ClipCatcher에서 바로 쓸 수 있는 구간 JSON과 편집자용 작업표를 내보냅니다.
+          </p>
+          <div class="cta-row">
+            <a class="button" href="./sample-report.html">실제 리포트 보기</a>
+            <a class="button secondary" href="./integration.html">ClipCatcher 연동 보기</a>
+          </div>
+        </div>
+        <aside class="hero-side">
+          <article class="mini-card">
+            <strong>30초</strong>
+            <span>채팅 반응을 기본 30초 단위로 나눠 후보를 계산합니다.</span>
+          </article>
+          <article class="mini-card">
+            <strong>+30/+60</strong>
+            <span>핵심 반응 앞 30초, 뒤 60초를 붙여 추천 컷 범위를 만듭니다.</span>
+          </article>
+          <article class="mini-card">
+            <strong>JSON</strong>
+            <span>ClipCatcher가 읽을 수 있는 다운로드 구간 데이터로 저장합니다.</span>
+          </article>
+        </aside>
+      </section>
+
+      <section class="section panel">
+        <p class="eyebrow">What It Does</p>
+        <h2>편집자가 바로 판단할 수 있게</h2>
+        <div class="grid">
+          <article class="step-card">
+            <h3>채팅 급증 감지</h3>
+            <p>VOD 전체 기준보다 채팅량이 크게 튄 구간을 먼저 찾습니다.</p>
+          </article>
+          <article class="step-card">
+            <h3>하이라이트 타입 분류</h3>
+            <p>웃긴 리액션, 고점 리액션, 놀람/사건, 채팅 급증으로 후보를 분류합니다.</p>
+          </article>
+          <article class="step-card">
+            <h3>작업 파일 내보내기</h3>
+            <p>ClipCatcher용 JSON, CSV 작업표, HTML 리포트로 후보를 재사용합니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <p class="footer">ClipRadar MVP는 로컬 분석 도구이며, 이 페이지는 GitHub Pages용 소개 사이트입니다.</p>
+    </main>
+  </body>
+</html>

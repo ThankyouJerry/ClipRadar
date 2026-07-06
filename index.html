@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClipRadar MVP</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">ClipRadar MVP</p>
+          <h1>방송의 뜨거운 순간을<br />지도처럼 찾습니다.</h1>
+          <p class="hero-copy">
+            채팅 밀도, 클립 반응, 키워드 급증을 합쳐 VOD 속 하이라이트를 자동으로
+            탐지하고 편집 가능한 리포트로 정리합니다.
+          </p>
+        </div>
+        <aside class="score-card">
+          <span>이번 주 레이더 신뢰도</span>
+          <strong id="confidenceScore">--</strong>
+          <small>채팅/클립/키워드 신호 일치율</small>
+        </aside>
+      </section>
+
+      <section class="analyzer panel">
+        <div>
+          <p class="eyebrow">Real VOD Analyzer</p>
+          <h2>치지직 VOD URL 분석</h2>
+          <p>
+            VOD URL을 한 줄에 하나씩 넣으면 다시보기 채팅을 빠르게 샘플링해 30초 단위 하이라이트 후보를 계산합니다.
+            여러 링크를 넣으면 주간 묶음 리포트로 합산합니다.
+            현재 v0.1은 채팅/키워드 기반 분석이며, 클립 데이터는 다음 단계에서 보강합니다.
+          </p>
+        </div>
+        <div class="analyzer-form">
+          <textarea id="vodUrlInput" rows="4" placeholder="https://chzzk.naver.com/video/1234567&#10;https://chzzk.naver.com/video/2345678"></textarea>
+          <button id="analyzeButton" type="button">분석</button>
+          <span id="analyzeStatus">샘플 데이터 표시 중</span>
+        </div>
+      </section>
+
+      <section class="controls panel">
+        <div class="control-filters">
+          <label class="control-report">
+            리포트
+            <select id="streamerSelect"></select>
+          </label>
+          <label>
+            정렬
+            <select id="sortSelect">
+              <option value="score">종합 하이라이트 점수</option>
+              <option value="chat">채팅 급증도</option>
+              <option value="clips">클립 영향도</option>
+            </select>
+          </label>
+          <label>
+            분석 모드
+            <select id="analysisModeSelect">
+              <option value="quick">빠른 분석</option>
+              <option value="precise">정밀 분석</option>
+            </select>
+          </label>
+          <button id="toggleExcludedButton" type="button">제외 보기 (0)</button>
+        </div>
+        <div class="control-actions" aria-label="내보내기">
+          <button id="exportClipCatcherJsonButton" type="button">ClipCatcher용 JSON</button>
+          <button id="exportCsvButton" type="button">CSV 작업표</button>
+          <button id="exportEditorHtmlButton" type="button">편집자 HTML</button>
+          <button id="exportWeeklyHtmlButton" type="button">주간 리포트</button>
+        </div>
+      </section>
+
+      <section class="streamer-strip panel" id="streamerStrip">
+        <div class="streamer-avatar">
+          <img id="streamerAvatarImage" alt="" />
+          <span id="streamerAvatarFallback">C</span>
+        </div>
+        <div class="streamer-info">
+          <p class="eyebrow">Current Report</p>
+          <h2 id="streamerName">ClipRadar</h2>
+          <p id="streamerReportTitle">리포트를 선택하거나 VOD를 분석하면 스트리머 정보가 표시됩니다.</p>
+        </div>
+      </section>
+
+      <section class="summary-grid" id="summaryGrid"></section>
+
+      <section class="metric-rules panel">
+        <div>
+          <p class="eyebrow">Scoring Model</p>
+          <h2>지표 기준</h2>
+        </div>
+        <div class="rule-grid">
+          <article>
+            <strong>종합 하이라이트 점수</strong>
+            <p>클립 데이터가 있으면 채팅 급증도 40% + 클립 조회 영향 25% + 클립 생성 밀도 20% + 키워드 급증도 15%</p>
+            <p>현재 채팅 기반 분석에서는 채팅 급증도 70% + 키워드 급증도 30%로 계산합니다.</p>
+          </article>
+          <article>
+            <strong>채팅 급증도</strong>
+            <p>구간 분당 채팅량을 해당 스트리머의 평소 분당 채팅량과 비교한 배수</p>
+          </article>
+          <article>
+            <strong>클립 영향도</strong>
+            <p>구간 주변 클립 생성 밀도와 조회수 확산을 분리 계산한 뒤 합산</p>
+          </article>
+          <article>
+            <strong>추천 컷 범위</strong>
+            <p>채팅이 실제로 튄 핵심 반응 구간 앞 30초와 뒤 60초를 붙여 편집자가 바로 확인할 수 있는 범위</p>
+          </article>
+          <article>
+            <strong>하이라이트 타입</strong>
+            <p>채팅 키워드와 반응 문맥으로 웃긴 리액션, 고점 리액션, 놀람/사건, 채팅 급증으로 우선 분류</p>
+          </article>
+          <article>
+            <strong>타입 신뢰도</strong>
+            <p>분류 타입과 맞는 키워드 비중을 계산해 하이라이트 타입 옆에 0-100% 기준으로 표시합니다.</p>
+          </article>
+          <article>
+            <strong>대표 채팅 샘플</strong>
+            <p>해당 구간에서 실제로 수집된 채팅 일부를 보여줘 편집자가 반응 맥락을 빠르게 확인할 수 있게 합니다.</p>
+          </article>
+          <article>
+            <strong>인접 구간 병합</strong>
+            <p>같은 VOD 안에서 90초 이내로 이어지는 30초 후보는 최대 3분까지 하나의 연속 반응 구간으로 합쳐 중복 카드를 줄입니다.</p>
+          </article>
+          <article>
+            <strong>고정/제외</strong>
+            <p>좋은 후보는 고정해 위로 올리고, 애매한 후보는 제외해 ClipCatcher용 JSON/CSV/HTML 내보내기에서 자동으로 빼줍니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow" id="momentMapEyebrow">Moment Map</p>
+            <h2 id="momentMapTitle">VOD 타임라인 신호</h2>
+          </div>
+          <p id="momentMapDescription">채팅 폭발, 클립 생성, 키워드 급증이 겹치는 구간일수록 더 밝게 표시됩니다.</p>
+        </div>
+        <div class="timeline-tabs" id="timelineTabs"></div>
+        <div class="weekly-overview" id="weeklyOverview"></div>
+        <div class="timeline" id="timeline"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Top Signals</p>
+            <h2>이번 주 TOP 하이라이트</h2>
+          </div>
+          <p>각 카드에는 왜 이 구간이 재밌었는지 설명 가능한 근거를 붙였습니다.</p>
+        </div>
+        <div class="moments" id="moments"></div>
+      </section>
+
+      <section class="confidence-guide panel">
+        <div>
+          <p class="eyebrow">Confidence Guide</p>
+          <h2>레이더 신뢰도란?</h2>
+          <p>
+            레이더 신뢰도는 ClipRadar가 뽑은 하이라이트 후보에서 서로 다른 신호가
+            얼마나 같은 구간을 가리키는지 나타내는 값입니다. 숫자가 높을수록
+            채팅, 클립, 키워드가 같은 순간에 함께 반응했다는 뜻입니다.
+          </p>
+        </div>
+        <div class="confidence-grid">
+          <article>
+            <strong>채팅 신호</strong>
+            <p>평소 대비 채팅량이 튄 구간인지 확인합니다.</p>
+          </article>
+          <article>
+            <strong>클립 신호</strong>
+            <p>해당 구간 주변에 클립 생성 또는 조회 확산이 있는지 봅니다.</p>
+          </article>
+          <article>
+            <strong>키워드 신호</strong>
+            <p>웃음, 놀람, 특정 밈/상황어가 짧은 시간에 몰렸는지 봅니다.</p>
+          </article>
+          <article>
+            <strong>해석 기준</strong>
+            <p>90% 이상은 강한 후보, 75-89%는 좋은 후보, 60-74%는 검토 후보입니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="export-guide panel">
+        <div>
+          <p class="eyebrow">Export Guide</p>
+          <h2>ClipCatcher용 JSON은 어디에 쓰나요?</h2>
+          <p>
+            ClipCatcher용 JSON은 ClipRadar가 찾은 하이라이트 구간을 ClipCatcher에서
+            바로 가져오기 위한 데이터 파일입니다. 고정 후보는 먼저 정렬하고, 제외 후보는
+            자동으로 빼서 저장합니다.
+          </p>
+        </div>
+        <div class="export-uses">
+          <article>
+            <strong>ClipCatcher 연동</strong>
+            <p>시작/종료 시간을 읽어 하이라이트 구간만 자동 다운로드할 수 있습니다.</p>
+          </article>
+          <article>
+            <strong>편집자 작업표</strong>
+            <p>TOP 구간, 점수, 선정 이유를 편집자가 확인할 목록으로 변환할 수 있습니다.</p>
+          </article>
+          <article>
+            <strong>리포트 자동 생성</strong>
+            <p>주간 HTML 리포트나 블로그 글을 같은 데이터로 다시 만들 수 있습니다.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <template id="summaryTemplate">
+      <article class="summary-card">
+        <span></span>
+        <strong></strong>
+        <small></small>
+      </article>
+    </template>
+
+    <template id="momentTemplate">
+      <article class="moment-card">
+        <div class="rank"></div>
+        <div class="moment-main">
+          <div class="moment-topline">
+            <span class="badge"></span>
+            <span class="time"></span>
+          </div>
+          <h3></h3>
+          <p class="reason"></p>
+          <div class="metrics"></div>
+          <div class="keywords"></div>
+          <div class="evidence-keywords"></div>
+          <div class="chat-samples"></div>
+        </div>
+        <div class="review-actions">
+          <button class="pin-button" type="button">고정</button>
+          <button class="exclude-button" type="button">제외</button>
+          <a target="_blank" rel="noreferrer">치지직에서 보기</a>
+        </div>
+      </article>
+    </template>
+
+    <script src="./sample-data.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

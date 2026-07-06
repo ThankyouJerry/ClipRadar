@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ClipRadar - 사용법</title>
+    <link rel="stylesheet" href="./assets/site.css" />
+  </head>
+  <body>
+    <main class="site-shell">
+      <nav class="site-nav">
+        <a class="brand" href="./index.html">
+          <span class="brand-mark">CR</span>
+          <span><strong>ClipRadar</strong><span>How to use</span></span>
+        </a>
+        <div class="nav-links">
+          <a href="./index.html">소개</a>
+          <a href="./sample-report.html">실제 리포트</a>
+          <a class="active" href="./usage.html">사용법</a>
+          <a href="./integration.html">다운로드/연동</a>
+        </div>
+      </nav>
+
+      <section class="section panel">
+        <p class="eyebrow">Workflow</p>
+        <h1>분석부터 작업표까지</h1>
+        <p class="lead">
+          ClipRadar는 긴 방송을 처음부터 끝까지 수동으로 보는 시간을 줄이기 위한 도구입니다.
+          분석 결과는 후보일 뿐이며, 최종 판단은 편집자가 대표 채팅과 컷 범위를 보고 결정합니다.
+        </p>
+      </section>
+
+      <section class="section panel">
+        <div class="grid">
+          <article class="step-card">
+            <h3>1. VOD URL 입력</h3>
+            <p>치지직 VOD 링크를 한 줄에 하나씩 넣습니다. 여러 개를 넣으면 주간 묶음으로 분석합니다.</p>
+          </article>
+          <article class="step-card">
+            <h3>2. 빠른/정밀 분석 선택</h3>
+            <p>빠른 분석은 후보를 빨리 찾고, 정밀 분석은 더 많은 샘플 지점을 확인합니다.</p>
+          </article>
+          <article class="step-card">
+            <h3>3. 후보 검토</h3>
+            <p>좋은 후보는 고정하고, 애매한 후보는 제외합니다. 제외 후보는 내보내기에서 빠집니다.</p>
+          </article>
+          <article class="step-card">
+            <h3>4. ClipCatcher용 JSON 저장</h3>
+            <p>추천 컷 범위가 들어 있는 JSON을 저장해 ClipCatcher에서 구간 다운로드에 사용합니다.</p>
+          </article>
+          <article class="step-card">
+            <h3>5. CSV/HTML 작업표 저장</h3>
+            <p>편집자에게 공유할 목록은 CSV 또는 HTML로 따로 저장합니다.</p>
+          </article>
+          <article class="step-card">
+            <h3>6. ClipCatcher에서 다운로드</h3>
+            <p>분석 후보 중 필요한 구간만 다운로드한 뒤 편집 작업으로 이어갑니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section panel">
+        <p class="eyebrow">Tip</p>
+        <h2>여러 VOD를 넣는 경우</h2>
+        <p>
+          주간 분석은 각 VOD를 자기 평균 기준으로 먼저 계산한 뒤 후보를 합칩니다.
+          그래서 긴 방송 하나가 단순 채팅량만으로 전체 TOP을 독점하지 않도록 설계되어 있습니다.
+        </p>
+      </section>
+
+      <section class="section panel">
+        <p class="eyebrow">GitHub Pages</p>
+        <h2>웹에서는 정적 리포트로 공유</h2>
+        <p>
+          GitHub Pages는 정적 사이트라 Python 분석 서버를 실행하지 않습니다.
+          새 VOD는 로컬 ClipRadar에서 분석하고, 결과 HTML을 저장소의 <code>docs/</code> 폴더에 추가해 공유하는 방식이 가장 안정적입니다.
+        </p>
+      </section>
+
+      <p class="footer">로컬 앱에서 분석하고, 이 페이지는 사용법 공유용으로 활용할 수 있습니다.</p>
+    </main>
+  </body>
+</html>
