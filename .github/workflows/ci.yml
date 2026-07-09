@@ -1,0 +1,55 @@
+name: ClipRadar CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Python syntax check
+        run: python -m py_compile server.py
+
+      - name: JavaScript syntax check
+        run: |
+          node --check app.js
+          node --check sample-data.js
+
+      - name: Local server smoke test
+        shell: bash
+        run: |
+          python server.py > /tmp/clipradar.log 2>&1 &
+          pid=$!
+          trap 'kill $pid 2>/dev/null || true' EXIT
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:5173/ > /tmp/clipradar-home.html; then
+              break
+            fi
+            sleep 0.5
+          done
+          grep -q "ClipRadar MVP" /tmp/clipradar-home.html
+          code=$(curl -sS -o /tmp/clipradar-api.json -w "%{http_code}" \
+            -X POST http://127.0.0.1:5173/api/analyze \
+            -H "Content-Type: application/json" \
+            -d '{"urls":["https://example.com/video/1"]}')
+          test "$code" = "400"
+          grep -q "치지직 VOD URL" /tmp/clipradar-api.json
