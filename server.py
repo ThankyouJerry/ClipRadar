@@ -781,12 +781,20 @@ def analyze_chats(
                 "clipCountPerHour": 0,
             },
             "confidenceScore": confidence,
-            "confidenceGuide": "분석은 VOD 전체를 샘플링해 채팅 신호와 키워드 신호가 동시에 강한 구간을 찾습니다. 정밀 분석은 더 많은 샘플 지점을 사용합니다.",
+            "confidenceGuide": "레이더 신뢰도는 선택된 후보에서 채팅 급증과 반응 키워드 급증이 함께 강하고 서로 비슷한 수준으로 나타나는지 계산합니다. 클립 데이터는 현재 신뢰도에 포함하지 않습니다.",
             "scoringModel": {
                 "mode": "chat-only",
                 "radarScore": "채팅 급증도 70% + 키워드 급증도 30%",
-                "chatSpike": "구간 분당 채팅량 / VOD 평균 분당 채팅량",
-                "keywordSpike": "구간 분당 반응 키워드 수 / VOD 평균 분당 반응 키워드 수",
+                "chatSpike": (
+                    "구간의 샘플 채팅량 / 수집된 샘플 내 기준 채팅량"
+                    if use_quick_scan
+                    else "구간 분당 채팅량 / VOD 전체 평균 분당 채팅량"
+                ),
+                "keywordSpike": (
+                    "구간의 샘플 반응 키워드 수 / 수집된 샘플 내 기준 키워드 수"
+                    if use_quick_scan
+                    else "구간 분당 반응 키워드 수 / VOD 전체 평균 분당 반응 키워드 수"
+                ),
             },
         },
         "moments": moments,
@@ -794,16 +802,29 @@ def analyze_chats(
 
 
 def calculate_confidence(moments: List[Dict[str, Any]]) -> int:
+    """Measure agreement and strength of the available chat-only signals."""
     if not moments:
         return 0
+
+    def signal_strength(spike: float) -> float:
+        if spike >= 3.0:
+            return 1.0
+        if spike >= 2.0:
+            return 0.85
+        if spike >= 1.5:
+            return 0.65
+        if spike >= 1.2:
+            return 0.45
+        return 0.25
+
     scores = []
     for moment in moments:
         metrics = moment["metrics"]
-        chat_signal = 1 if metrics["chatSpike"] >= 2 else 0.65 if metrics["chatSpike"] >= 1.4 else 0.25
-        keyword_signal = 1 if metrics["keywordSpike"] >= 2 else 0.65 if metrics["keywordSpike"] >= 1.4 else 0.25
-        # No clip data in v0.1, so keep confidence intentionally conservative.
-        clip_signal = 0.45
-        scores.append((chat_signal + keyword_signal + clip_signal) / 3)
+        chat_signal = signal_strength(float(metrics.get("chatSpike") or 0))
+        keyword_signal = signal_strength(float(metrics.get("keywordSpike") or 0))
+        strength = (chat_signal + keyword_signal) / 2
+        agreement = 1 - abs(chat_signal - keyword_signal)
+        scores.append(strength * (0.75 + agreement * 0.25))
     return round(sum(scores) / len(scores) * 100)
 
 
